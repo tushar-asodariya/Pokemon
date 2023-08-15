@@ -1,18 +1,25 @@
 part of 'internet_checker_cubit.dart';
 
-@immutable
-abstract class InternetState {
+abstract class InternetState{
   bool showConnected = false;
 }
 
-class InternetLoading extends InternetState {}
-
-class InternetConnected extends InternetState {}
-
-class InternetDisconnected extends InternetState {
+class InternetLoading extends InternetState with EquatableMixin {
   @override
-  set showConnected(bool _showConnected) {
-    super.showConnected = _showConnected;
+  List<Object?> get props => [showConnected];
+}
+
+class InternetConnected extends InternetState with EquatableMixin {
+  @override
+  List<Object?> get props => [showConnected];
+}
+
+class InternetDisconnected extends InternetState with EquatableMixin {
+  @override
+  set showConnected(bool showConnected) {
+    super.showConnected = showConnected;
   }
+  @override
+  List<Object?> get props => [showConnected];
 }
 

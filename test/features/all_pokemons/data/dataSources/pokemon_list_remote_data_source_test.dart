@@ -6,7 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pokemon/core/errors/exceptions.dart';
 import 'package:pokemon/features/all_pokemons/data/dataSources/pokemon_list_remote_data_source.dart';
 
-import '../../../../../lib/core/constants/api_path_constants.dart';
+import 'package:pokemon/core/constants/api_path_constants.dart';
 import '../../../../test_data/read_test_data_files.dart';
 import 'pokemon_list_remote_data_source_test.mocks.dart';
 
