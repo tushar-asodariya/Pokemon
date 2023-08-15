@@ -19,12 +19,14 @@ class PokemonListRespModel extends PokemonListDataModel with EquatableMixin {
   List<Object?> get props => [count, next, previous, results];
 
   Map<String, dynamic> toJson() {
-    return {
-      'count': count,
-      'next': next,
-      'previous': previous,
-      'results': results,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['count'] = count;
+    data['next'] = next;
+    data['previous'] = previous;
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 
   factory PokemonListRespModel.fromJson(Map<String, dynamic> json) {

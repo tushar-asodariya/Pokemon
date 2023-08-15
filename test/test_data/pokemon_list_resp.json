@@ -1,0 +1,20 @@
+{
+  "count": 1281,
+  "next": "https://pokeapi.co/api/v2/pokemon?offset=13&limit=10",
+  "previous": "https://pokeapi.co/api/v2/pokemon?offset=0&limit=3",
+  "results": [
+    {
+      "name": "charmander",
+      "url": "https://pokeapi.co/api/v2/pokemon/4/"
+    },
+    {
+      "name": "charmeleon",
+      "url": "https://pokeapi.co/api/v2/pokemon/5/"
+    },
+    {
+      "name": "charizard",
+      "url": "https://pokeapi.co/api/v2/pokemon/6/"
+    }
+
+  ]
+}
