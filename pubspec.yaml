@@ -47,6 +47,7 @@ dependencies:
   shimmer_animation: ^2.1.0+1
   get_it: ^7.6.0
   string_utils_extension: ^0.0.1+7
+  intl: ^0.18.1
   
 
 dev_dependencies:

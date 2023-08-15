@@ -52,31 +52,33 @@ class PokemonApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<InternetCheckerCubit>(
-          create: (context) => InternetCheckerCubit(
-              internetConnection: di.getInstance<InternetConnection>()),
-        ),
+        // BlocProvider<InternetCheckerCubit>(
+        //   create: (context) => InternetCheckerCubit(
+        //       internetConnection: di.getInstance<InternetConnection>()),
+        // ),
         BlocProvider<PokemonListBloc>(
             create: (context) =>
                 di.getInstance<PokemonListBloc>()..add(GetPokemonListEvent()))
       ],
-      child: BlocListener<InternetCheckerCubit, InternetState>(
-        listener: (context, state) {
-          if (state is InternetConnected) {
-            BotToast.showText(text: 'Internet Connected');
-          } else if (state is InternetDisconnected) {
-            BotToast.showText(text: 'Internet Disconnected');
-          }
-        },
-        child: MaterialApp(
-          title: 'Pokemon',
-          builder: BotToastInit(),
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          onGenerateRoute: di.getInstance<AppRouter>().onGenerateRoute,
+      child:
+          // BlocListener<InternetCheckerCubit, InternetState>(
+          //   listener: (context, state) {
+          //     if (state is InternetConnected) {
+          //       BotToast.showText(text: 'Internet Connected');
+          //     } else if (state is InternetDisconnected) {
+          //       BotToast.showText(text: 'Internet Disconnected');
+          //     }
+          //   },
+          // child:
+          MaterialApp(
+        title: 'Pokemon',
+        builder: BotToastInit(),
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
         ),
+        onGenerateRoute: di.getInstance<AppRouter>().onGenerateRoute,
       ),
     );
+    // );
   }
 }

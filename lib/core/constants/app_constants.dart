@@ -1,1 +1,1 @@
-const int pokemonPageLimit = 10;
+const int pokemonPageLimit = 20;

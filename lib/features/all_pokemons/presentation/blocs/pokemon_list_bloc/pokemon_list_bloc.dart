@@ -46,16 +46,7 @@ class PokemonListBloc extends Bloc<PokemonListEvent, PokemonListState> {
           await getPokemonList(pokemonListReqModel);
       emit(_eitherSuccessOrErrorState(pokemonApiResults, state));
 
-      // final posts = await _fetchPosts(state.posts.length);
-      // posts.isEmpty
-      //     ? emit(state.copyWith(hasReachedMax: true))
-      //     : emit(
-      //         state.copyWith(
-      //           status: PostStatus.success,
-      //           posts: List.of(state.posts)..addAll(posts),
-      //           hasReachedMax: false,
-      //         ),
-      //       );
+     
     } catch (e) {
       emit(PokemonListError(errMsg: e.toString()));
     }

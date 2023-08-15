@@ -13,7 +13,9 @@ class PokemonListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String id = pokemonNameDataModel.url.toString().isNotEmpty ? parsePokemonIdFromUrl(pokemonNameDataModel.url.toString()) : '';
+    String id = pokemonNameDataModel.url.toString().isNotEmpty
+        ? parsePokemonIdFromUrl(pokemonNameDataModel.url.toString())
+        : '';
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
       child: Container(
@@ -31,7 +33,7 @@ class PokemonListItemWidget extends StatelessWidget {
                 children: [
                   Text(
                     '#$id',
-                    style: GoogleFonts.roboto(
+                    style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: ColorConstant.darkCharcoal),
@@ -41,7 +43,7 @@ class PokemonListItemWidget extends StatelessWidget {
                   ),
                   Text(
                     pokemonNameDataModel.name.toString().toCapitalize(),
-                    style: GoogleFonts.roboto(
+                    style: GoogleFonts.poppins(
                         fontSize: 21,
                         fontWeight: FontWeight.w600,
                         color: Colors.black),
@@ -56,32 +58,33 @@ class PokemonListItemWidget extends StatelessWidget {
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.circular(20)),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: id.isNotEmpty ?
-               CachedNetworkImage(
-                imageUrl:
-                      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
-                    // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$id.gif",
-                placeholder: (context, url) => Shimmer(
-                  child: Container(
-                    decoration:const BoxDecoration(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => CachedNetworkImage(
-                  imageUrl:
-                      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
-                  placeholder: (context, url) => Shimmer(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
+              child: id.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl:
+                          // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+                          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$id.gif",
+                      placeholder: (context, url) => Shimmer(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                ),
-              ) : const Icon(Icons.error),
-            
+                      errorWidget: (context, url, error) => CachedNetworkImage(
+                        imageUrl:
+                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+                        placeholder: (context, url) => Shimmer(
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                      ),
+                    )
+                  : const Icon(Icons.error),
             ),
           ],
         ),

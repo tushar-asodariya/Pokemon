@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokemon/core/constants/app_constants.dart';
+import 'package:pokemon/core/constants/route_constants.dart';
 import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_bloc.dart';
@@ -29,10 +31,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   void _onScroll() {
-    PokemonListBloc pokemonListBloc = context.read<PokemonListBloc>();
-    if (pokemonListBloc.state is PokemonListLoading ||
-        pokemonListBloc.state is PokemonListLoadingMore) return;
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) return;
     if (_isBottom) {
+      PokemonListBloc pokemonListBloc = context.read<PokemonListBloc>();
+      if (pokemonListBloc.state is PokemonListLoading ||
+          pokemonListBloc.state is PokemonListLoadingMore) return;
       if (pokemonListBloc.state is PokemonListSuccess) {
         PokemonListReqModel pokemonListReqModel = PokemonListReqModel(
             limit: pokemonPageLimit,
@@ -46,16 +50,13 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   bool get _isBottom {
-    return _scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent;
+    return _scrollController.position.extentBefore >=
+        _scrollController.position.maxScrollExtent * 0.88;
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PokemonListBloc, PokemonListState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+    return BlocBuilder<PokemonListBloc, PokemonListState>(
       builder: (context, state) {
         if (state is PokemonListLoading ||
             state is PokemonListSuccess ||
@@ -74,7 +75,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                 },
                 child: SingleChildScrollView(
                   controller: _scrollController,
-                  physics: const PageScrollPhysics(),
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     children: [
                       Skeletonizer(
@@ -84,12 +85,18 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                                 pokemonList.isNotEmpty
                                     ? pokemonList.length
                                     : 10,
-                                (index) => PokemonListItemWidget(
-                                      pokemonNameDataModel:
-                                          pokemonList.isNotEmpty
-                                              ? pokemonList[index]
-                                              : const PokemonNameDataModel(
-                                                  name: '', url: ''),
+                                (index) => GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(context,
+                                            Routes.pokemonDetailScreen);
+                                      },
+                                      child: PokemonListItemWidget(
+                                        pokemonNameDataModel:
+                                            pokemonList.isNotEmpty
+                                                ? pokemonList[index]
+                                                : const PokemonNameDataModel(
+                                                    name: '', url: ''),
+                                      ),
                                     )),
                           )),
                       if (state is PokemonListLoadingMore)
@@ -117,7 +124,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                     state is PokemonListError
                         ? state.errMsg
                         : 'Something horrible happened',
-                    style: GoogleFonts.roboto(
+                    style: GoogleFonts.poppins(
                         color: Colors.red,
                         fontSize: 20,
                         fontWeight: FontWeight.w500),
