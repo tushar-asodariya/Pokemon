@@ -8,14 +8,6 @@ import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_
 import '../../../../test_data/read_test_data_files.dart';
 
 void main(){
-  final PokemonNameRespModel pokemonNameRespModel = PokemonNameRespModel(name: 'charmander', url: 'https://pokeapi.co/api/v2/pokemon/4/');
-  final PokemonNameRespModel pokemonNameRespModel2 = PokemonNameRespModel(name: 'charmeleon', url: 'https://pokeapi.co/api/v2/pokemon/5/');
-  final PokemonNameRespModel pokemonNameRespModel3 = PokemonNameRespModel(name: 'charizard', url: 'https://pokeapi.co/api/v2/pokemon/6/');
-
-  final tPokemonListRespModel = PokemonListRespModel(count: 1281,
-      next: 'https://pokeapi.co/api/v2/pokemon?offset=13&limit=10',
-      previous: 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=3',
-      results: [pokemonNameRespModel,pokemonNameRespModel2, pokemonNameRespModel3 ]);
 
   test('should be a sub-class of PokemonListDataModel', ()async{
     expect(tPokemonListRespModel, isA<PokemonListDataModel>());

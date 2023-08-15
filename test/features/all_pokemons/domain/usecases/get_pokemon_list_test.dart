@@ -6,6 +6,7 @@ import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/repositories/pokemon_list_repository.dart';
 import 'package:pokemon/features/all_pokemons/domain/usecases/get_pokemon_list.dart';
+import '../../../../test_data/read_test_data_files.dart';
 import 'get_pokemon_list_test.mocks.dart';
 import 'package:mockito/annotations.dart';
 
@@ -21,23 +22,16 @@ void main(){
     useCase = GetPokemonList(pokemonListRepository: mockPokemonListRepository);
   });
   
-  final PokemonNameDataModel pokemonNameDataModel = PokemonNameDataModel(name: 'charmander', url: 'https://pokeapi.co/api/v2/pokemon/4/');
-  final PokemonNameDataModel pokemonNameDataModel2 = PokemonNameDataModel(name: 'charmeleon', url: 'https://pokeapi.co/api/v2/pokemon/5/');
-  final PokemonNameDataModel pokemonNameDataModel3 = PokemonNameDataModel(name: 'charizard', url: 'https://pokeapi.co/api/v2/pokemon/6/');
-  final PokemonListDataModel pokemonListDataModel = PokemonListDataModel(next: 'https://pokeapi.co/api/v2/pokemon?offset=13&limit=10',
-      previous: 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=3',
-      pokemonNameList: [pokemonNameDataModel, pokemonNameDataModel2,pokemonNameDataModel3]);
-  final PokemonListReqModel pokemonListReqParamsModel = PokemonListReqModel(limit: 10,offset: 3);
-  test('should get List of pokemon from repository', ()async{
+   test('should get List of pokemon from repository', ()async{
 
-    when(mockPokemonListRepository.getPokemonList(pokemonListReqParamsModel))
-        .thenAnswer((_) async => Right(pokemonListDataModel));
+    when(mockPokemonListRepository.getPokemonList(tPokemonListReqModel))
+        .thenAnswer((_) async => Right(tPokemonListRespModel));
 
-    final result = await useCase(pokemonListReqParamsModel);
+    final result = await useCase(tPokemonListReqModel);
 
-    expect(result,Right(pokemonListDataModel));
+    expect(result,Right(tPokemonListRespModel));
 
-    verify(mockPokemonListRepository.getPokemonList(pokemonListReqParamsModel));
+    verify(mockPokemonListRepository.getPokemonList(tPokemonListReqModel));
 
     verifyNoMoreInteractions(mockPokemonListRepository);
 
