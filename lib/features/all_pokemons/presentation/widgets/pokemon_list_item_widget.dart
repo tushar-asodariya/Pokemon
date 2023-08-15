@@ -13,8 +13,9 @@ class PokemonListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String id = pokemonNameDataModel.url.toString().isNotEmpty ? parsePokemonIdFromUrl(pokemonNameDataModel.url.toString()) : '';
     return Padding(
-      padding: EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
       child: Container(
         decoration: BoxDecoration(
             color: ColorConstant.isabelline,
@@ -24,18 +25,18 @@ class PokemonListItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 20, top: 20, bottom: 20),
+              padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '#${parsePokemonIdFromUrl(pokemonNameDataModel.url.toString())}',
+                    '#$id',
                     style: GoogleFonts.roboto(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: ColorConstant.darkCharcoal),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Text(
@@ -54,30 +55,33 @@ class PokemonListItemWidget extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.circular(20)),
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: CachedNetworkImage(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: id.isNotEmpty ?
+               CachedNetworkImage(
                 imageUrl:
-                    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${parsePokemonIdFromUrl(pokemonNameDataModel.url.toString())}.gif",
+                      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+                    // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$id.gif",
                 placeholder: (context, url) => Shimmer(
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration:const BoxDecoration(
                       color: Colors.grey,
                     ),
                   ),
                 ),
                 errorWidget: (context, url, error) => CachedNetworkImage(
                   imageUrl:
-                      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${parsePokemonIdFromUrl(pokemonNameDataModel.url.toString())}.png",
+                      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
                   placeholder: (context, url) => Shimmer(
                     child: Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.grey,
                       ),
                     ),
                   ),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
                 ),
-              ),
+              ) : const Icon(Icons.error),
+            
             ),
           ],
         ),

@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokemon/core/constants/app_constants.dart';
+import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_bloc.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_event.dart';
@@ -16,44 +20,87 @@ class PokemonListScreen extends StatefulWidget {
 }
 
 class _PokemonListScreenState extends State<PokemonListScreen> {
+  final _scrollController = ScrollController();
+  List<PokemonNameDataModel> pokemonList = [];
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    PokemonListBloc pokemonListBloc = context.read<PokemonListBloc>();
+    if (pokemonListBloc.state is PokemonListLoading ||
+        pokemonListBloc.state is PokemonListLoadingMore) return;
+    if (_isBottom) {
+      if (pokemonListBloc.state is PokemonListSuccess) {
+        PokemonListReqModel pokemonListReqModel = PokemonListReqModel(
+            limit: pokemonPageLimit,
+            offset:
+                pokemonListBloc.pokemonListReqModel.offset + pokemonPageLimit);
+        log('pokemon offset :: ${pokemonListReqModel.offset}');
+        pokemonListBloc.pokemonListReqModel = pokemonListReqModel;
+        pokemonListBloc.add(GetMorePokemonListEvent());
+      }
+    }
+  }
+
+  bool get _isBottom {
+    return _scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<PokemonListBloc, PokemonListState>(
       listener: (context, state) {
         // TODO: implement listener
-        print(
-            '@@@ state :: ${state.pokemonListDataModel.pokemonNameList.length}');
-        print('@@@ state :: ${state is PokemonListLoading}');
-        print('@@@ state :: ${state is PokemonListSuccess}');
       },
       builder: (context, state) {
-        print(
-            '@@@ state builder :: ${state.pokemonListDataModel.pokemonNameList.length}');
-        print('@@@ state :: ${state is PokemonListLoading}');
-        print('@@@ state :: ${state is PokemonListSuccess}');
-        if (state is PokemonListLoading || state is PokemonListSuccess) {
+        if (state is PokemonListLoading ||
+            state is PokemonListSuccess ||
+            state is PokemonListLoadingMore) {
+          pokemonList.addAll(state.pokemonListDataModel.pokemonNameList);
           return Scaffold(
-              appBar: AppBar(title: Text('Pokemon')),
+              appBar: AppBar(title: const Text('Pokemon')),
               body: RefreshIndicator(
                 onRefresh: () async {
-                  context
-                      .read<PokemonListBloc>()
-                      .add(GetPokemonListReTryEvent());
+                  pokemonList.clear();
+                  PokemonListBloc pokemonListBloc =
+                      context.read<PokemonListBloc>();
+                  pokemonListBloc.pokemonListReqModel =
+                      PokemonListReqModel(limit: pokemonPageLimit, offset: 0);
+                  pokemonListBloc.add(GetPokemonListReTryEvent());
                 },
-                child: Skeletonizer(
-                  enabled: state is PokemonListLoading,
-                  child: ListView.builder(
-                      itemCount: state is PokemonListSuccess
-                          ? state.pokemonListDataModel.pokemonNameList.length
-                          : 10,
-                      itemBuilder: (listContext, index) =>
-                          PokemonListItemWidget(
-                            pokemonNameDataModel: state.pokemonListDataModel
-                                    .pokemonNameList.isNotEmpty
-                                ? state
-                                    .pokemonListDataModel.pokemonNameList[index]
-                                : PokemonNameDataModel(name: '', url: ''),
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  physics: const PageScrollPhysics(),
+                  child: Column(
+                    children: [
+                      Skeletonizer(
+                          enabled: state is PokemonListLoading,
+                          child: Column(
+                            children: List.generate(
+                                pokemonList.isNotEmpty
+                                    ? pokemonList.length
+                                    : 10,
+                                (index) => PokemonListItemWidget(
+                                      pokemonNameDataModel:
+                                          pokemonList.isNotEmpty
+                                              ? pokemonList[index]
+                                              : const PokemonNameDataModel(
+                                                  name: '', url: ''),
+                                    )),
                           )),
+                      if (state is PokemonListLoadingMore)
+                        const Skeletonizer(
+                          enabled: true,
+                          child: PokemonListItemWidget(
+                              pokemonNameDataModel:
+                                  PokemonNameDataModel(name: '', url: '')),
+                        )
+                    ],
+                  ),
                 ),
               ));
         }
@@ -85,7 +132,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                           .read<PokemonListBloc>()
                           .add(GetPokemonListReTryEvent());
                     },
-                    child: Center(child: Icon(Icons.refresh)))
+                    child: const Center(child: Icon(Icons.refresh)))
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -22,19 +23,25 @@ void main() async {
 
   Dio dioClient = di.getInstance<Dio>();
   //to retry pending api calls when internet gets available again
-  dioClient.interceptors.addAll([
+  dioClient.interceptors.add(
     RetryOnInternetChangeInterceptor(
         internetRequestRetriever: di.getInstance()),
-    Logging(),
-    PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: false,
-        error: true,
-        compact: true,
-        maxWidth: 90)
-  ]);
+  );
+  if (kDebugMode) {
+    dioClient.interceptors.addAll([
+      RetryOnInternetChangeInterceptor(
+          internetRequestRetriever: di.getInstance()),
+      Logging(),
+      // PrettyDioLogger(
+      //     requestHeader: true,
+      //     requestBody: true,
+      //     responseBody: true,
+      //     responseHeader: false,
+      //     error: true,
+      //     compact: true,
+      //     maxWidth: 90)
+    ]);
+  }
   runApp(const PokemonApp());
 }
 
@@ -50,7 +57,8 @@ class PokemonApp extends StatelessWidget {
               internetConnection: di.getInstance<InternetConnection>()),
         ),
         BlocProvider<PokemonListBloc>(
-            create: (context) => di.getInstance<PokemonListBloc>()..add(GetPokemonListEvent()))
+            create: (context) =>
+                di.getInstance<PokemonListBloc>()..add(GetPokemonListEvent()))
       ],
       child: BlocListener<InternetCheckerCubit, InternetState>(
         listener: (context, state) {

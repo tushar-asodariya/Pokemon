@@ -160,7 +160,9 @@ class PrettyDioLogger extends Interceptor {
   void _printRequestHeader(RequestOptions options) {
     final uri = options.uri;
     final method = options.method;
-    _printBoxed(header: 'Request ║ $method || Timestamp : ${DateTime.now()} ', text: uri.toString());
+    _printBoxed(
+        header: 'Request ║ $method || Timestamp : ${DateTime.now()} ',
+        text: uri.toString());
   }
 
   void _printLine([String pre = '', String suf = '╝']) =>
@@ -282,7 +284,8 @@ class Logging extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
-      print('REQUEST[${options.method}] => PATH: ${options.path} || Timestamp : ${DateTime.now()} ');
+      print(
+          'REQUEST[${options.method}] => PATH: ${options.path} => ${options.queryParameters} || Timestamp : ${DateTime.now()} ');
     }
     return super.onRequest(options, handler);
   }

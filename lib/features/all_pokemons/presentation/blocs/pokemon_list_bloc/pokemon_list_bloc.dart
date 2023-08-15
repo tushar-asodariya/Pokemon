@@ -2,7 +2,9 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:pokemon/core/constants/app_constants.dart';
 import 'package:pokemon/core/errors/failure.dart';
+import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/usecases/get_pokemon_list.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_event.dart';
@@ -19,11 +21,14 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 
 class PokemonListBloc extends Bloc<PokemonListEvent, PokemonListState> {
   final GetPokemonList getPokemonList;
-
+  PokemonListReqModel pokemonListReqModel =
+      PokemonListReqModel(limit: pokemonPageLimit, offset: 0);
   PokemonListBloc({required this.getPokemonList})
       : super(PokemonListLoading()) {
-    on<PokemonListEvent>(_onPostFetched,
-        transformer: throttleDroppable(throttleDuration));
+    on<PokemonListEvent>(
+      _onPostFetched,
+    );
+    // transformer: throttleDroppable(throttleDuration));
   }
 
   Future<void> _onPostFetched(
@@ -31,15 +36,16 @@ class PokemonListBloc extends Bloc<PokemonListEvent, PokemonListState> {
     Emitter<PokemonListState> emit,
   ) async {
     try {
-      if (state is PokemonListLoading || event is GetPokemonListReTryEvent) {
-        if (event is GetPokemonListReTryEvent) {
-          emit(PokemonListLoading());
-        }
-        final pokemonApiResults =
-            await getPokemonList(state.pokemonListReqModel);
-
-        emit(_eitherSuccessOrErrorState(pokemonApiResults));
+      if (event is GetPokemonListReTryEvent) {
+        emit(PokemonListLoading());
       }
+      if (event is GetMorePokemonListEvent) {
+        emit(PokemonListLoadingMore());
+      }
+      final Either<Failure, PokemonListDataModel> pokemonApiResults =
+          await getPokemonList(pokemonListReqModel);
+      emit(_eitherSuccessOrErrorState(pokemonApiResults, state));
+
       // final posts = await _fetchPosts(state.posts.length);
       // posts.isEmpty
       //     ? emit(state.copyWith(hasReachedMax: true))
@@ -56,11 +62,13 @@ class PokemonListBloc extends Bloc<PokemonListEvent, PokemonListState> {
   }
 
   PokemonListState _eitherSuccessOrErrorState(
-    Either<Failure, PokemonListDataModel> failureOrTrivia,
-  ) {
+      Either<Failure, PokemonListDataModel> failureOrTrivia,
+      PokemonListState state) {
     return failureOrTrivia.fold(
       (failure) => PokemonListError(errMsg: 'Something went wrong'),
-      (success) => PokemonListSuccess(newData: success),
+      (success) {
+        return PokemonListSuccess(newData: success);
+      },
     );
   }
 }
