@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pokemon/core/constants/route_constants.dart';
-import 'package:pokemon/features/all_pokemons/screens/pokemon_list_screen.dart';
+import 'package:pokemon/features/all_pokemons/presentation/screens/pokemon_list_screen.dart';
 
 class AppRouter{
 

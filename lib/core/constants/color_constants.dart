@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class ColorConstant {
 
   static Color snowColor = fromHex("#F8FAF9");
-
+  static Color isabelline = fromHex("#EDF6EC");
+  static Color darkCharcoal = fromHex("#333333");
 
 
 

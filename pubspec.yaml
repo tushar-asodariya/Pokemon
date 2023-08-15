@@ -40,6 +40,12 @@ dependencies:
   internet_connection_checker_plus: ^2.0.0
   dartz: ^0.10.1
   bloc_test: ^9.1.4
+  google_fonts: ^5.1.0
+  skeletonizer: ^0.6.0
+  stream_transform: ^2.1.0
+  bloc_concurrency: ^0.2.2
+  shimmer_animation: ^2.1.0+1
+  
 
 dev_dependencies:
   flutter_test:
