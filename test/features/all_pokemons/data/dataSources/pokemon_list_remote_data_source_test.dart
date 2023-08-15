@@ -35,7 +35,7 @@ void main() {
       queryParameters: tPokemonListReqModel.toJson(),
     )).thenAnswer(
       (_) async => dio.Response(
-          data: readTestData('pokemon_list_resp.json'),
+          data: json.decode(readTestData('pokemon_list_resp.json')),
           requestOptions: requestOptions,
           statusCode: 200),
     );

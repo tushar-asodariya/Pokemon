@@ -22,7 +22,7 @@ class PokemonListRemoteDataSourceImpl extends PokemonListRemoteDataSource{
     );
 
     if (response.statusCode == 200) {
-      return PokemonListRespModel.fromJson(json.decode(response.data));
+      return PokemonListRespModel.fromJson(response.data);
     } else {
       throw ServerException();
     }
