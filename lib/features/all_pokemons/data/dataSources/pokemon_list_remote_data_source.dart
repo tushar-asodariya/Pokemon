@@ -11,9 +11,9 @@ abstract class PokemonListRemoteDataSource{
 }
 
 
-class PokemonListRemoteRepository extends PokemonListRemoteDataSource{
+class PokemonListRemoteDataSourceImpl extends PokemonListRemoteDataSource{
   final Dio dioClient;
-  PokemonListRemoteRepository({required this.dioClient});
+  PokemonListRemoteDataSourceImpl({required this.dioClient});
   @override
   Future<PokemonListRespModel> getPokemonList({required PokemonListReqModel pokemonListReqParamsModel}) async{
     final response = await dioClient.get(
