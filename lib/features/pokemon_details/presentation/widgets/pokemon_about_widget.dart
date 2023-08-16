@@ -40,7 +40,7 @@ class PokemonAboutWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          rowBuilder('Species', "pokeData.species"),
+          rowBuilder('Habitat', "pokeData.species"),
           rowBuilder('Height', ' m'),
           rowBuilder('Weight', ' kg'),
           rowBuilder('Abilities', ''

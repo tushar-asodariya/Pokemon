@@ -3,4 +3,7 @@ class ApiPath{
 
   //pokemons list
   static const String pokemonList = '$baseUrl/pokemon';
+
+  //pokemons species
+  static const String pokemonSpeciesDetails = '$baseUrl/pokemon-species';
 }
