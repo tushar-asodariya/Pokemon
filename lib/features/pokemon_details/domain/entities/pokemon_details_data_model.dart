@@ -10,8 +10,8 @@ class PokemonDetailsDataModel extends Equatable {
   final int pokemonId;
   final PokemonAboutDataModel? aboutDataModel;
   final PokemonStatsDataModel? statsDataModel;
-  final PokemonMovesDataModel? movesDataModel;
-  final PokemonTypesData? typesDataModel;
+  final List<PokemonMovesDataModel>? movesDataModel;
+  final List<PokemonTypesData>? typesDataModel;
   const PokemonDetailsDataModel({
     required this.pokemonId,
      this.aboutDataModel,
@@ -24,8 +24,8 @@ class PokemonDetailsDataModel extends Equatable {
     int? pokemonId,
     PokemonAboutDataModel? aboutDataModel,
     PokemonStatsDataModel? statsDataModel,
-    PokemonMovesDataModel? movesDataModel,
-    PokemonTypesData? typesDataModel,
+    List<PokemonMovesDataModel>? movesDataModel,
+    List<PokemonTypesData>? typesDataModel,
   }) {
     return PokemonDetailsDataModel(
       pokemonId: pokemonId ?? this.pokemonId,

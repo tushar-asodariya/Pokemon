@@ -6,13 +6,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokemon/core/constants/app_constants.dart';
 import 'package:pokemon/core/constants/route_constants.dart';
+import 'package:pokemon/core/utils/app_utils.dart';
 import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_bloc.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_event.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_state.dart';
 import 'package:pokemon/features/all_pokemons/presentation/widgets/pokemon_list_item_widget.dart';
+import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_detail_cubit/pokemon_detail_cubit.dart';
+import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_species_cubit/pokemon_species_cubit.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:string_utils_extension/string_utils_extension.dart';
 
 class PokemonListScreen extends StatefulWidget {
   const PokemonListScreen({super.key});
@@ -85,19 +89,44 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                                 pokemonList.isNotEmpty
                                     ? pokemonList.length
                                     : 10,
-                                (index) => GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(context,
-                                            Routes.pokemonDetailScreen);
-                                      },
-                                      child: PokemonListItemWidget(
-                                        pokemonNameDataModel:
-                                            pokemonList.isNotEmpty
-                                                ? pokemonList[index]
-                                                : const PokemonNameDataModel(
-                                                    name: '', url: ''),
-                                      ),
-                                    )),
+                                (index) => Builder(builder: (itemContext) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          int pokemonId = int.parse(
+                                              pokemonList[index]
+                                                      .url
+                                                      .toString()
+                                                      .isNotEmpty
+                                                  ? parsePokemonIdFromUrl(
+                                                      pokemonList[index]
+                                                          .url
+                                                          .toString())
+                                                  : '0');
+                                          itemContext
+                                              .read<PokemonDetailCubit>()
+                                              .emitGetPokemonDetails(pokemonId);
+                                          itemContext
+                                              .read<PokemonSpeciesCubit>()
+                                              .emitGetPokemonSpecies(pokemonId);
+                                          Navigator.pushNamed(itemContext,
+                                              Routes.pokemonDetailScreen,
+                                              arguments: {
+                                                'name': pokemonList[index]
+                                                    .name
+                                                    .toString()
+                                                    .toCapitalize(),
+                                                "pokemonId": pokemonId
+                                              });
+                                        },
+                                        child: PokemonListItemWidget(
+                                          pokemonNameDataModel:
+                                              pokemonList.isNotEmpty
+                                                  ? pokemonList[index]
+                                                  : const PokemonNameDataModel(
+                                                      name: '', url: ''),
+                                        ),
+                                      );
+                                    })),
                           )),
                       if (state is PokemonListLoadingMore)
                         const Skeletonizer(

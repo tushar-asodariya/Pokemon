@@ -13,12 +13,12 @@ class PokemonDetailsRemoteDataSourceImpl
     extends PokemonDetailsRemoteDataSource {
   final Dio dioClient;
 
-  PokemonDetailsRemoteDataSourceImpl(this.dioClient);
+  PokemonDetailsRemoteDataSourceImpl({required this.dioClient});
 
   @override
   Future<PokemonDetailsRespModel> getPokemonDetails(int pokemonId) async {
     final response = await dioClient.get(
-     '${ApiPath.pokemonList}/$pokemonId',
+      '${ApiPath.pokemonList}/$pokemonId',
     );
 
     if (response.statusCode == 200) {

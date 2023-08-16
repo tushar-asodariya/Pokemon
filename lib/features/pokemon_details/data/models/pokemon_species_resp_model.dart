@@ -1,9 +1,10 @@
 import 'package:pokemon/features/pokemon_details/domain/entities/pokemon_species_data_model.dart';
 
+// ignore: must_be_immutable
 class PokemonSpeciesRespModel extends PokemonSpeciesDataModel {
-  Color? color;
+  ColorDataModel? color;
   List<FlavorTextEntries>? flavorTextEntries;
-  Color? habitat;
+  ColorDataModel? habitat;
   int? id;
   
 
@@ -17,7 +18,7 @@ class PokemonSpeciesRespModel extends PokemonSpeciesDataModel {
 
   PokemonSpeciesRespModel.fromJson(Map<String, dynamic> json) :super(pokemonId: json['id'] ){
  
-    color = json['color'] != null ? Color.fromJson(json['color']) : null;
+    color = json['color'] != null ? ColorDataModel.fromJson(json['color']) : null;
   
     if (json['flavor_text_entries'] != null) {
       flavorTextEntries = <FlavorTextEntries>[];
@@ -29,7 +30,7 @@ class PokemonSpeciesRespModel extends PokemonSpeciesDataModel {
     id = json['id'];
    
     habitat =
-        json['habitat'] != null ? Color.fromJson(json['habitat']) : null;
+        json['habitat'] != null ? ColorDataModel.fromJson(json['habitat']) : null;
    
   }
 
@@ -57,13 +58,13 @@ class PokemonSpeciesRespModel extends PokemonSpeciesDataModel {
   }
 }
 
-class Color {
+class ColorDataModel {
   String? name;
   String? url;
 
-  Color({name, url});
+  ColorDataModel({name, url});
 
-  Color.fromJson(Map<String, dynamic> json) {
+  ColorDataModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     url = json['url'];
   }
@@ -79,17 +80,17 @@ class Color {
 
 class FlavorTextEntries {
   String? flavorText;
-  Color? language;
-  Color? version;
+  ColorDataModel? language;
+  ColorDataModel? version;
 
   FlavorTextEntries({flavorText, language, version});
 
   FlavorTextEntries.fromJson(Map<String, dynamic> json) {
     flavorText = json['flavor_text'];
     language =
-        json['language'] != null ? Color.fromJson(json['language']) : null;
+        json['language'] != null ? ColorDataModel.fromJson(json['language']) : null;
     version =
-        json['version'] != null ? Color.fromJson(json['version']) : null;
+        json['version'] != null ? ColorDataModel.fromJson(json['version']) : null;
   }
 
   Map<String, dynamic> toJson() {

@@ -23,7 +23,7 @@ class PokemonSpeciesDataModel extends Equatable {
       pokemonId: pokemonId ?? this.pokemonId,
       pokemonColor: pokemonColor ?? this.pokemonColor,
       description: description ?? this.description,
-      pokemonHabitat: habitat ?? this.pokemonHabitat,
+      pokemonHabitat: habitat ?? pokemonHabitat,
     );
   }
 

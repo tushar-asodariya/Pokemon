@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:intl/intl.dart';
 import 'package:pokemon/core/errors/exceptions.dart';
 import 'package:pokemon/core/errors/failure.dart';
 import 'package:pokemon/features/pokemon_details/data/dataSources/pokemon_details_remote_data_source.dart';
@@ -12,6 +13,7 @@ import 'package:pokemon/features/pokemon_details/domain/entities/pokemon_species
 import 'package:pokemon/features/pokemon_details/domain/entities/pokemon_stats_data_model.dart';
 import 'package:pokemon/features/pokemon_details/domain/entities/pokemon_types_data_model.dart';
 import 'package:pokemon/features/pokemon_details/domain/repositories/pokemon_details_repository.dart';
+import 'package:string_utils_extension/string_utils_extension.dart';
 
 class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
   final PokemonDetailsRemoteDataSource pokemonDetailsRemoteDataSource;
@@ -37,39 +39,50 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
     }
   }
 
-  getPokemonMovesFromResp(PokemonDetailsRespModel remoteResponse) {
-    String moves =
-        remoteResponse.moves != null && remoteResponse.moves!.isNotEmpty
-            ? remoteResponse.moves!.map((e) => e.move).toList().join(', ')
-            : '';
-    return PokemonMovesDataModel(moves: moves);
+  List<PokemonMovesDataModel>? getPokemonMovesFromResp(
+      PokemonDetailsRespModel remoteResponse) {
+    List<PokemonMovesDataModel>? movesDataModel;
+    if (remoteResponse.moves != null && remoteResponse.moves!.isNotEmpty) {
+      for (var element in remoteResponse.moves!) {
+        if (movesDataModel == null) {
+          movesDataModel = [
+            PokemonMovesDataModel(moves: element.move?.name ?? '')
+          ];
+        } else {
+          movesDataModel
+              .add(PokemonMovesDataModel(moves: element.move?.name ?? ''));
+        }
+      }
+    }
+    return movesDataModel;
   }
 
-  getPokemonStatsFromResp(PokemonDetailsRespModel remoteResponse) {
+  PokemonStatsDataModel? getPokemonStatsFromResp(
+      PokemonDetailsRespModel remoteResponse) {
     PokemonStatsDataModel? pokemonStatsDataModel;
     if (remoteResponse.stats != null) {
       double hp = remoteResponse.stats!
               .firstWhere(
                   (Stats element) =>
                       element.stat != null && element.stat!.name == 'hp',
-                  orElse: () => Stats(effort: 0))
-              .effort!
+                  orElse: () => Stats(baseStat: 0))
+              .baseStat!
               .toDouble() /
           100;
       double attack = remoteResponse.stats!
               .firstWhere(
                   (element) =>
                       element.stat != null && element.stat!.name == 'attack',
-                  orElse: () => Stats(effort: 0))
-              .effort!
+                  orElse: () => Stats(baseStat: 0))
+              .baseStat!
               .toDouble() /
           100;
       double defence = remoteResponse.stats!
               .firstWhere(
                   (element) =>
                       element.stat != null && element.stat!.name == 'defense',
-                  orElse: () => Stats(effort: 0))
-              .effort!
+                  orElse: () => Stats(baseStat: 0))
+              .baseStat!
               .toDouble() /
           100;
       double specialAttack = remoteResponse.stats!
@@ -77,8 +90,8 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
                   (element) =>
                       element.stat != null &&
                       element.stat!.name == 'special-attack',
-                  orElse: () => Stats(effort: 0))
-              .effort!
+                  orElse: () => Stats(baseStat: 0))
+              .baseStat!
               .toDouble() /
           100;
       double specialDefence = remoteResponse.stats!
@@ -86,16 +99,16 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
                   (element) =>
                       element.stat != null &&
                       element.stat!.name == 'special-defense',
-                  orElse: () => Stats(effort: 0))
-              .effort!
+                  orElse: () => Stats(baseStat: 0))
+              .baseStat!
               .toDouble() /
           100;
       double speed = remoteResponse.stats!
               .firstWhere(
                   (element) =>
                       element.stat != null && element.stat!.name == 'speed',
-                  orElse: () => Stats(effort: 0))
-              .effort!
+                  orElse: () => Stats(baseStat: 0))
+              .baseStat!
               .toDouble() /
           100;
       pokemonStatsDataModel = PokemonStatsDataModel(
@@ -109,23 +122,27 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
     return pokemonStatsDataModel;
   }
 
-  getPokemonTypesFromResp(PokemonDetailsRespModel remoteResponse) {
-    PokemonTypesData? typesDataModel;
+  List<PokemonTypesData>? getPokemonTypesFromResp(
+      PokemonDetailsRespModel remoteResponse) {
+    List<PokemonTypesData>? typesDataModel;
     if (remoteResponse.types != null && remoteResponse.types!.isNotEmpty) {
-      String type = remoteResponse.types!
-          .map((e) => e.type?.name.toString() ?? '')
-          .toList()
-          .join(', ');
-      typesDataModel = PokemonTypesData(type: type);
+      for (var element in remoteResponse.types!) {
+        if (typesDataModel == null) {
+          typesDataModel = [PokemonTypesData(type: element.type?.name ?? '')];
+        } else {
+          typesDataModel.add(PokemonTypesData(type: element.type?.name ?? ''));
+        }
+      }
     }
     return typesDataModel;
   }
 
-  getPokemonAboutDataFromResp(PokemonDetailsRespModel remoteResponse) {
+  PokemonAboutDataModel getPokemonAboutDataFromResp(
+      PokemonDetailsRespModel remoteResponse) {
     String abilities =
         remoteResponse.abilities != null && remoteResponse.abilities!.isNotEmpty
             ? remoteResponse.abilities!
-                .map((e) => e.ability?.name.toString() ?? '')
+                .map((e) => e.ability?.name.toString().toCapitalize() ?? '')
                 .toList()
                 .join(', ')
             : '';
@@ -146,19 +163,39 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
       final PokemonSpeciesRespModel remoteResponse =
           await pokemonDetailsRemoteDataSource
               .getPokemonSpeciesDetails(pokemonId);
-      String description = remoteResponse.flavorTextEntries!=null && remoteResponse.flavorTextEntries!.isNotEmpty?
-       remoteResponse.flavorTextEntries!
-          .map((e) => e.flavorText.toString())
+      List<FlavorTextEntries> flavourTextList =
+          remoteResponse.flavorTextEntries != null &&
+                  remoteResponse.flavorTextEntries!.isNotEmpty
+              ? remoteResponse.flavorTextEntries!
+                  .where((element) => element.language!.name == 'en')
+                  .toList()
+              : [];
+      String description = remoteResponse.flavorTextEntries != null &&
+              remoteResponse.flavorTextEntries!.isNotEmpty
+          ? flavourTextList
+              .map((e) => e.flavorText
+                  .toString()
+                  .replaceAll('\n', '')
+                  .replaceAll('\f', ''))
+              .toList()
+              .join(' ')
+          : '';
+      description = description
+          .split('.')
+          .map((e) => toBeginningOfSentenceCase(e))
           .toList()
-          .join(' '): '';
-          String habitat = remoteResponse.habitat!=null ? remoteResponse.habitat!.name.toString():'';
-          String pokemonColor = remoteResponse.color!=null ? remoteResponse.color!.name.toString():'';
+          .join('. ');
+      String habitat = remoteResponse.habitat != null
+          ? remoteResponse.habitat!.name.toString()
+          : '';
+      String pokemonColor = remoteResponse.color != null
+          ? remoteResponse.color!.name.toString()
+          : '';
       PokemonSpeciesDataModel pokemonSpeciesDataModel = PokemonSpeciesDataModel(
-        pokemonId: pokemonId,
-        description: description,
-        pokemonHabitat: habitat,
-        pokemonColor: pokemonColor
-      );
+          pokemonId: pokemonId,
+          description: description,
+          pokemonHabitat: habitat,
+          pokemonColor: pokemonColor);
       return Right(pokemonSpeciesDataModel);
     } on ServerException {
       return Left(ServerFailure());

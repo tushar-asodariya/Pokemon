@@ -9,6 +9,10 @@ import 'package:pokemon/core/network/internet_checker_bloc/internet_checker_cubi
 import 'package:pokemon/core/router/router.dart';
 import 'package:pokemon/features/all_pokemons/domain/usecases/get_pokemon_list.dart';
 import 'package:pokemon/features/all_pokemons/presentation/blocs/pokemon_list_bloc/pokemon_list_bloc.dart';
+import 'package:pokemon/features/pokemon_details/domain/usecases/get_pokemon_details.dart';
+import 'package:pokemon/features/pokemon_details/domain/usecases/get_pokemon_species.dart';
+import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_detail_cubit/pokemon_detail_cubit.dart';
+import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_species_cubit/pokemon_species_cubit.dart';
 import 'package:pokemon/pokemon_blocs_observer.dart';
 import 'core/network/interceptor/pretty_dio_logger.dart';
 import 'dependency_injection.dart' as di;
@@ -58,7 +62,15 @@ class PokemonApp extends StatelessWidget {
         // ),
         BlocProvider<PokemonListBloc>(
             create: (context) =>
-                di.getInstance<PokemonListBloc>()..add(GetPokemonListEvent()))
+                di.getInstance<PokemonListBloc>()..add(GetPokemonListEvent())),
+        BlocProvider<PokemonDetailCubit>(
+          create: (context) => PokemonDetailCubit(
+              getPokemonDetails: di.getInstance<GetPokemonDetails>()),
+        ),
+        BlocProvider<PokemonSpeciesCubit>(
+          create: (context) => PokemonSpeciesCubit(
+              getPokemonSpecies: di.getInstance<GetPokemonSpecies>()),
+        ),
       ],
       child:
           // BlocListener<InternetCheckerCubit, InternetState>(
