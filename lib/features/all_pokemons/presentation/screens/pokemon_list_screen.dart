@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pokemon/core/constants/app_constants.dart';
 import 'package:pokemon/core/constants/route_constants.dart';
 import 'package:pokemon/core/utils/app_utils.dart';
@@ -46,7 +45,6 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             limit: pokemonPageLimit,
             offset:
                 pokemonListBloc.pokemonListReqModel.offset + pokemonPageLimit);
-        log('pokemon offset :: ${pokemonListReqModel.offset}');
         pokemonListBloc.pokemonListReqModel = pokemonListReqModel;
         pokemonListBloc.add(GetMorePokemonListEvent());
       }
@@ -62,6 +60,18 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<PokemonListBloc, PokemonListState>(
       builder: (context, state) {
+        if (state is PokemonListError) {
+          showErrorDialog(
+              errorMsg: state.errMsg,
+              onRefresh: () {
+                pokemonList.clear();
+                PokemonListBloc pokemonListBloc =
+                    context.read<PokemonListBloc>();
+                pokemonListBloc.pokemonListReqModel =
+                    PokemonListReqModel(limit: pokemonPageLimit, offset: 0);
+                pokemonListBloc.add(GetPokemonListReTryEvent());
+              });
+        }
         if (state is PokemonListLoading ||
             state is PokemonListSuccess ||
             state is PokemonListLoadingMore) {
@@ -141,38 +151,9 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               ));
         }
 
-        return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Center(
-                  child: Text(
-                    state is PokemonListError
-                        ? state.errMsg
-                        : 'Something horrible happened',
-                    style: GoogleFonts.poppins(
-                        color: Colors.red,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                    onTap: () {
-                      context
-                          .read<PokemonListBloc>()
-                          .add(GetPokemonListReTryEvent());
-                    },
-                    child: const Center(child: Icon(Icons.refresh)))
-              ],
-            ),
-          ),
-        );
+        return const Scaffold(
+            body:
+                Padding(padding: EdgeInsets.all(20), child: SizedBox()));
       },
     );
   }

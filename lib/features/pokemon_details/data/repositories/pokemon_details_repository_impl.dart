@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:pokemon/core/errors/exceptions.dart';
 import 'package:pokemon/core/errors/failure.dart';
+import 'package:pokemon/dependency_injection.dart';
 import 'package:pokemon/features/pokemon_details/data/dataSources/pokemon_details_remote_data_source.dart';
 import 'package:pokemon/features/pokemon_details/data/models/pokemon_details_resp_model.dart';
 import 'package:pokemon/features/pokemon_details/data/models/pokemon_species_resp_model.dart';
@@ -23,17 +25,22 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
   Future<Either<Failure, PokemonDetailsDataModel>> getPokemonDetails(
       int pokemonId) async {
     try {
-      final PokemonDetailsRespModel remoteResponse =
-          await pokemonDetailsRemoteDataSource.getPokemonDetails(pokemonId);
+      if (await getInstance<InternetConnection>().hasInternetAccess) {
+        final PokemonDetailsRespModel remoteResponse =
+            await pokemonDetailsRemoteDataSource.getPokemonDetails(pokemonId);
 
-      PokemonDetailsDataModel pokemonDetailsDataModel = PokemonDetailsDataModel(
-          pokemonId: pokemonId,
-          aboutDataModel: getPokemonAboutDataFromResp(remoteResponse),
-          movesDataModel: getPokemonMovesFromResp(remoteResponse),
-          statsDataModel: getPokemonStatsFromResp(remoteResponse),
-          typesDataModel: getPokemonTypesFromResp(remoteResponse));
+        PokemonDetailsDataModel pokemonDetailsDataModel =
+            PokemonDetailsDataModel(
+                pokemonId: pokemonId,
+                aboutDataModel: getPokemonAboutDataFromResp(remoteResponse),
+                movesDataModel: getPokemonMovesFromResp(remoteResponse),
+                statsDataModel: getPokemonStatsFromResp(remoteResponse),
+                typesDataModel: getPokemonTypesFromResp(remoteResponse));
 
-      return Right(pokemonDetailsDataModel);
+        return Right(pokemonDetailsDataModel);
+      } else {
+        return Left(NoInternetFailure());
+      }
     } on ServerException {
       return Left(ServerFailure());
     }
@@ -55,6 +62,58 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
       }
     }
     return movesDataModel;
+  }
+
+@override
+  Future<Either<Failure, PokemonSpeciesDataModel>> getPokemonSpeciesDetails(
+      int pokemonId) async {
+    try {
+      if (await getInstance<InternetConnection>().hasInternetAccess) {
+        final PokemonSpeciesRespModel remoteResponse =
+            await pokemonDetailsRemoteDataSource
+                .getPokemonSpeciesDetails(pokemonId);
+        List<FlavorTextEntries> flavourTextList =
+            remoteResponse.flavorTextEntries != null &&
+                    remoteResponse.flavorTextEntries!.isNotEmpty
+                ? remoteResponse.flavorTextEntries!
+                    .where((element) => element.language!.name == 'en')
+                    .toList()
+                : [];
+        String description = remoteResponse.flavorTextEntries != null &&
+                remoteResponse.flavorTextEntries!.isNotEmpty
+            ? flavourTextList
+                .map((e) => e.flavorText
+                    .toString()
+                    .replaceAll('\n', '')
+                    .replaceAll('\f', ''))
+                .toList()
+                .join(' ')
+            : '';
+        description = description
+            .split('.')
+            .map((e) => toBeginningOfSentenceCase(e))
+            .toList()
+            .join('. ');
+        String habitat = remoteResponse.habitat != null
+            ? remoteResponse.habitat!.name.toString()
+            : '';
+        String pokemonColor = remoteResponse.color != null
+            ? remoteResponse.color!.name.toString()
+            : '';
+        PokemonSpeciesDataModel pokemonSpeciesDataModel =
+            PokemonSpeciesDataModel(
+                pokemonId: pokemonId,
+                description: description,
+                pokemonHabitat: habitat,
+                pokemonColor: pokemonColor);
+        return Right(pokemonSpeciesDataModel);
+      }
+      else{
+           return Left(NoInternetFailure());
+      }
+    } on ServerException {
+      return Left(ServerFailure());
+    }
   }
 
   PokemonStatsDataModel? getPokemonStatsFromResp(
@@ -153,52 +212,7 @@ class PokemonDetailsRepositoryImpl extends PokemonDetailsRepository {
         ? (remoteResponse.weight!.toDouble() / 10).toString()
         : '';
     return PokemonAboutDataModel(
-        ability: abilities, habitat: '', height: height, weight: weight);
+        ability: abilities, habitat: '', height: height, weight: weight, pokemonId: remoteResponse.id.toString());
   }
 
-  @override
-  Future<Either<Failure, PokemonSpeciesDataModel>> getPokemonSpeciesDetails(
-      int pokemonId) async {
-    try {
-      final PokemonSpeciesRespModel remoteResponse =
-          await pokemonDetailsRemoteDataSource
-              .getPokemonSpeciesDetails(pokemonId);
-      List<FlavorTextEntries> flavourTextList =
-          remoteResponse.flavorTextEntries != null &&
-                  remoteResponse.flavorTextEntries!.isNotEmpty
-              ? remoteResponse.flavorTextEntries!
-                  .where((element) => element.language!.name == 'en')
-                  .toList()
-              : [];
-      String description = remoteResponse.flavorTextEntries != null &&
-              remoteResponse.flavorTextEntries!.isNotEmpty
-          ? flavourTextList
-              .map((e) => e.flavorText
-                  .toString()
-                  .replaceAll('\n', '')
-                  .replaceAll('\f', ''))
-              .toList()
-              .join(' ')
-          : '';
-      description = description
-          .split('.')
-          .map((e) => toBeginningOfSentenceCase(e))
-          .toList()
-          .join('. ');
-      String habitat = remoteResponse.habitat != null
-          ? remoteResponse.habitat!.name.toString()
-          : '';
-      String pokemonColor = remoteResponse.color != null
-          ? remoteResponse.color!.name.toString()
-          : '';
-      PokemonSpeciesDataModel pokemonSpeciesDataModel = PokemonSpeciesDataModel(
-          pokemonId: pokemonId,
-          description: description,
-          pokemonHabitat: habitat,
-          pokemonColor: pokemonColor);
-      return Right(pokemonSpeciesDataModel);
-    } on ServerException {
-      return Left(ServerFailure());
-    }
   }
-}

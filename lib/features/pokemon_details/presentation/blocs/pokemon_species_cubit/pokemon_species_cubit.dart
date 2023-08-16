@@ -9,9 +9,10 @@ part 'pokemon_species_cubit_state.dart';
 
 class PokemonSpeciesCubit extends Cubit<PokemonSpeciesCubitState> {
   final GetPokemonSpecies getPokemonSpecies;
-  PokemonSpeciesCubit({required this.getPokemonSpecies}) : super(PokemonSpeciesCubitLoading());
+  PokemonSpeciesCubit({required this.getPokemonSpecies})
+      : super(PokemonSpeciesCubitLoading());
 
-   void emitGetPokemonSpecies(int pokemonId) async {
+  void emitGetPokemonSpecies(int pokemonId) async {
     emit(PokemonSpeciesCubitLoading());
     final repoResponse = await getPokemonSpecies(Params(pokemonId: pokemonId));
     emit(_eitherSuccessOrErrorState(repoResponse));
@@ -21,7 +22,14 @@ class PokemonSpeciesCubit extends Cubit<PokemonSpeciesCubitState> {
     Either<Failure, PokemonSpeciesDataModel> failureOrTrivia,
   ) {
     return failureOrTrivia.fold(
-      (failure) => PokemonSpeciesCubitError(errMsg: 'Something went wrong'),
+      (failure) {
+        String errorMsg = 'Something went wrong';
+        if (failure is NoInternetFailure) {
+          errorMsg = 'No Internet Connection';
+          return PokemonSpeciesCubitInternetError();
+        }
+        return PokemonSpeciesCubitError(errMsg: errorMsg);
+      },
       (success) {
         return PokemonSpeciesCubitSuccess(success);
       },

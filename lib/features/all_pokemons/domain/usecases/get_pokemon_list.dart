@@ -12,6 +12,7 @@ class GetPokemonList extends UseCase<PokemonListDataModel,PokemonListReqModel>{
 
   @override
   Future<Either<Failure, PokemonListDataModel>> call(PokemonListReqModel params) async{
+    
     return await pokemonListRepository.getPokemonList(params);
 
   }

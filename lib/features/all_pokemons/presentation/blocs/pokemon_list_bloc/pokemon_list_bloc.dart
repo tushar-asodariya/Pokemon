@@ -44,19 +44,25 @@ class PokemonListBloc extends Bloc<PokemonListEvent, PokemonListState> {
       }
       final Either<Failure, PokemonListDataModel> pokemonApiResults =
           await getPokemonList(pokemonListReqModel);
-      emit(_eitherSuccessOrErrorState(pokemonApiResults,));
-
-     
+      emit(_eitherSuccessOrErrorState(
+        pokemonApiResults,
+      ));
     } catch (e) {
       emit(PokemonListError(errMsg: e.toString()));
     }
   }
 
   PokemonListState _eitherSuccessOrErrorState(
-      Either<Failure, PokemonListDataModel> failureOrTrivia,
-      ) {
+    Either<Failure, PokemonListDataModel> failureOrTrivia,
+  ) {
     return failureOrTrivia.fold(
-      (failure) => PokemonListError(errMsg: 'Something went wrong'),
+      (failure) {
+        String errorMsg = 'Something went wrong';
+        if (failure is NoInternetFailure) {
+          errorMsg = 'No Internet Connection';
+        }
+        return PokemonListError(errMsg: errorMsg);
+      },
       (success) {
         return PokemonListSuccess(newData: success);
       },

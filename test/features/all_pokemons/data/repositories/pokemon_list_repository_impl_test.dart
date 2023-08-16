@@ -4,9 +4,6 @@ import 'package:mockito/mockito.dart';
 import 'package:pokemon/core/errors/exceptions.dart';
 import 'package:pokemon/core/errors/failure.dart';
 import 'package:pokemon/features/all_pokemons/data/dataSources/pokemon_list_remote_data_source.dart';
-import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model.dart';
-import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_resp_model.dart';
-import 'package:pokemon/features/all_pokemons/data/models/pokemon_name_resp_model.dart';
 import 'package:pokemon/features/all_pokemons/data/repositories/pokemon_list_repository_impl.dart';
 
 import '../../../../test_data/read_test_data_files.dart';

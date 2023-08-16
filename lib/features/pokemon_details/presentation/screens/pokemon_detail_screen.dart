@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:pokemon/core/constants/api_path_constants.dart';
+import 'package:pokemon/core/utils/app_utils.dart';
 import 'package:pokemon/core/utils/view_more.dart';
 import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_detail_cubit/pokemon_detail_cubit.dart';
 import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_species_cubit/pokemon_species_cubit.dart';
@@ -49,6 +51,18 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<PokemonDetailCubit, PokemonDetailCubitState>(
       builder: (context, state) {
+        if (state is PokemonDetailCubitError) {
+          showErrorDialog(
+              errorMsg: state.errMsg,
+              onRefresh: () {
+                context
+                    .read<PokemonDetailCubit>()
+                    .emitGetPokemonDetails(pokemonId);
+                context
+                    .read<PokemonSpeciesCubit>()
+                    .emitGetPokemonSpecies(pokemonId);
+              });
+        }
         if (state is PokemonDetailCubitSuccess) {
           type =
               state.pokemonDetailsDataModel.typesDataModel?.first.type.trim() ??
@@ -81,8 +95,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                       width: 200,
                       fit: BoxFit.contain,
                       imageUrl:
-                          // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
-                          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$pokemonId.gif",
+                          "${ApiPath.pokemonGifBaseUrl}$pokemonId.gif",
                       placeholder: (context, url) => Shimmer(
                         child: Container(
                           decoration: BoxDecoration(
@@ -95,7 +108,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                         width: 200,
                         fit: BoxFit.contain,
                         imageUrl:
-                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemonId.png",
+                            "${ApiPath.pokemonPngBaseUrl}$pokemonId.png",
                         placeholder: (context, url) => Shimmer(
                           child: Container(
                             decoration: BoxDecoration(
@@ -167,6 +180,19 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           BlocBuilder<PokemonSpeciesCubit,
                               PokemonSpeciesCubitState>(
                             builder: (context, speciesState) {
+                              if (speciesState is PokemonSpeciesCubitError) {
+                                showErrorDialog(
+                                    errorMsg: speciesState.errMsg,
+                                    onRefresh: () {
+                                      context
+                                          .read<PokemonSpeciesCubit>()
+                                          .emitGetPokemonSpecies(
+                                              int.parse(pokemonId.toString()));
+                                    });
+                              }
+                              if (state is PokemonSpeciesCubitInternetError) {
+                                return const SizedBox();
+                              }
                               return Skeletonizer(
                                   enabled: speciesState
                                       is PokemonSpeciesCubitLoading,

@@ -27,3 +27,6 @@ final class PokemonSpeciesCubitError extends PokemonSpeciesCubitState {
    final String errMsg;
   PokemonSpeciesCubitError({required this.errMsg});
 }
+final class PokemonSpeciesCubitInternetError extends PokemonSpeciesCubitState {
+  PokemonSpeciesCubitInternetError();
+}

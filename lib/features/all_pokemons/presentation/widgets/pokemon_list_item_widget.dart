@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokemon/core/constants/api_path_constants.dart';
 import 'package:pokemon/core/constants/color_constants.dart';
 import 'package:pokemon/core/utils/app_utils.dart';
 import 'package:pokemon/core/utils/map_card_color.dart';
@@ -68,8 +69,7 @@ class PokemonListItemWidget extends StatelessWidget {
                   child: id.isNotEmpty
                       ? CachedNetworkImage(
                           imageUrl:
-                              // "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
-                              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/$id.gif",
+                              "${ApiPath.pokemonGifBaseUrl}$id.gif",
                           placeholder: (context, url) => Shimmer(
                             child: Container(
                               decoration: const BoxDecoration(
@@ -80,7 +80,7 @@ class PokemonListItemWidget extends StatelessWidget {
                           errorWidget: (context, url, error) =>
                               CachedNetworkImage(
                             imageUrl:
-                                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+                                "${ApiPath.pokemonPngBaseUrl}$id.png",
                             placeholder: (context, url) => Shimmer(
                               child: Container(
                                 decoration: const BoxDecoration(

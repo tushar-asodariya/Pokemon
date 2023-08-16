@@ -23,7 +23,13 @@ class PokemonDetailCubit extends Cubit<PokemonDetailCubitState> {
     Either<Failure, PokemonDetailsDataModel> failureOrTrivia,
   ) {
     return failureOrTrivia.fold(
-      (failure) => PokemonDetailCubitError(errMsg: 'Something went wrong'),
+      (failure) {
+        String errorMsg = 'Something went wrong';
+        if (failure is NoInternetFailure) {
+          errorMsg = 'No Internet Connection';
+        }
+        return PokemonDetailCubitError(errMsg: errorMsg);
+      },
       (success) {
         return PokemonDetailCubitSuccess(success);
       },

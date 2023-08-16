@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:pokemon/core/network/interceptor/dio_internetconnection_request_retriever.dart';
-import 'package:pokemon/core/network/internet_checker_bloc/internet_checker_cubit.dart';
 import 'package:pokemon/features/all_pokemons/data/dataSources/pokemon_list_remote_data_source.dart';
 import 'package:pokemon/features/all_pokemons/domain/repositories/pokemon_list_repository.dart';
 import 'package:pokemon/features/all_pokemons/domain/usecases/get_pokemon_list.dart';
@@ -74,11 +73,7 @@ Future<void> init() async {
 
   //Core
   getInstance.registerLazySingleton(() => AppRouter());
-  getInstance.registerFactory(
-    () => InternetCheckerCubit(
-      internetConnection: getInstance(),
-    ),
-  );
+
 
   //! External
    getInstance.registerFactory(() => DioInternetRequestRetriever(

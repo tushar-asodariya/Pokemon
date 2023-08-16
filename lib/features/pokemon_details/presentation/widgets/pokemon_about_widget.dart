@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokemon/core/utils/app_utils.dart';
 import 'package:pokemon/features/pokemon_details/domain/entities/pokemon_about_data_model.dart';
 import 'package:pokemon/features/pokemon_details/presentation/blocs/pokemon_species_cubit/pokemon_species_cubit.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -20,6 +21,19 @@ class PokemonAboutWidget extends StatelessWidget {
         children: [
           BlocBuilder<PokemonSpeciesCubit, PokemonSpeciesCubitState>(
             builder: (context, state) {
+              if (state is PokemonSpeciesCubitError) {
+                showErrorDialog(
+                    errorMsg: state.errMsg,
+                    onRefresh: () {
+                      context.read<PokemonSpeciesCubit>().emitGetPokemonSpecies(
+                          int.parse(
+                              pokemonAboutDataModel!.pokemonId.toString()));
+                    });
+              }
+              if (state is PokemonSpeciesCubitInternetError) {
+                return const SizedBox();
+              }
+
               return Skeletonizer(
                   enabled: state is PokemonSpeciesCubitLoading,
                   child: rowBuilder(

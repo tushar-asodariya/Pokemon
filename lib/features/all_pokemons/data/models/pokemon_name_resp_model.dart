@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 
+// ignore: must_be_immutable
 class PokemonNameRespModel extends PokemonNameDataModel with EquatableMixin {
   String name;
   String url;

@@ -2,8 +2,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_req_model.dart';
-import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/repositories/pokemon_list_repository.dart';
 import 'package:pokemon/features/all_pokemons/domain/usecases/get_pokemon_list.dart';
 import '../../../../test_data/read_test_data_files.dart';

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokemon/features/all_pokemons/data/models/pokemon_list_resp_model.dart';
-import 'package:pokemon/features/all_pokemons/data/models/pokemon_name_resp_model.dart';
 import 'package:pokemon/features/all_pokemons/domain/entities/pokemon_name_data_model.dart';
 
 import '../../../../test_data/read_test_data_files.dart';
